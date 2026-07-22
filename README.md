@@ -1,3 +1,5 @@
+# SystemPayment
+Sistema de punto de venta
 # KREA Sistema Administrativo
 
 Este proyecto es un sistema administrativo completo construido sobre **Laravel 12** y una plantilla de administración con **Tailwind CSS v4** y **Alpine.js**. Está diseñado para gestionar ventas, compras, inventario y usuarios, con una interfaz de panel de control moderna y responsive.
