@@ -1,0 +1,21 @@
+{
+    "name": "Sistema de Gestión",
+    "short_name": "Negocio",
+    "description": "Sistema de gestión de ventas, compras e inventario",
+    "start_url": "/",
+    "scope": "/",
+    "display": "standalone",
+    "orientation": "portrait-primary",
+    "background_color": "#ffffff",
+    "theme_color": "#465fff",
+    "lang": "es",
+    "icons": [
+        {
+            "src": "/images/logo/auth-logo.png",
+            "sizes": "any",
+            "type": "image/png",
+            "purpose": "any"
+        }
+    ]
+}
+
