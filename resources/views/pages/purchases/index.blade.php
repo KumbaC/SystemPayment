@@ -44,12 +44,12 @@
                         <td class="px-4 py-3 text-right">
                             <div class="flex items-center justify-end gap-2">
                                 @if ($purchase->status === 'completed')
-                                    <form action="{{ route('purchases.cancel', $purchase) }}" method="POST" onsubmit="return confirm('¿Deseas anular esta compra? Esto ajustará inventario y saldos.')">
+                                    <form action="{{ route('purchases.cancel', $purchase) }}" method="POST" class="js-confirm-action" data-confirm-title="¿Anular esta compra?" data-confirm-text="Esto ajustará inventario y saldos." data-confirm-button="Sí, anular" data-confirm-color="#dc2626">
                                         @csrf
                                         <button type="submit" class="rounded-lg bg-red-500 px-2.5 py-1.5 text-xs text-white hover:bg-red-600">Anular</button>
                                     </form>
                                 @else
-                                    <form action="{{ route('purchases.activate', $purchase) }}" method="POST" onsubmit="return confirm('¿Deseas activar nuevamente esta compra?')">
+                                    <form action="{{ route('purchases.activate', $purchase) }}" method="POST" class="js-confirm-action" data-confirm-title="¿Activar nuevamente esta compra?" data-confirm-text="La compra volverá a estado activa." data-confirm-button="Sí, activar" data-confirm-color="#16a34a">
                                         @csrf
                                         <button type="submit" class="rounded-lg bg-green-500 px-2.5 py-1.5 text-xs text-white hover:bg-green-600">Activar</button>
                                     </form>
@@ -67,3 +67,42 @@
     </div>
     <div class="mt-4">{{ $purchases->links() }}</div>
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.js-confirm-action').forEach(function (form) {
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            const title = form.dataset.confirmTitle || '¿Confirmar acción?';
+            const text = form.dataset.confirmText || '';
+            const confirmButtonText = form.dataset.confirmButton || 'Confirmar';
+            const confirmButtonColor = form.dataset.confirmColor || '#465fff';
+
+            if (window.Swal) {
+                window.Swal.fire({
+                    icon: 'warning',
+                    title,
+                    text,
+                    showCancelButton: true,
+                    confirmButtonText,
+                    cancelButtonText: 'Cancelar',
+                    confirmButtonColor,
+                }).then(function (result) {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+
+                return;
+            }
+
+            if (confirm(title + (text ? '\n' + text : ''))) {
+                form.submit();
+            }
+        });
+    });
+});
+</script>
+@endpush

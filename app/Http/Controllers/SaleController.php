@@ -58,7 +58,7 @@ class SaleController extends Controller
             ->where('active', true)
             ->where('stock', '>', 0)
             ->orderBy('name', 'asc')
-            ->get(['id', 'name', 'sku', 'price_usd', 'stock'])
+            ->get(['id', 'name', 'sku', 'price_usd', 'stock', 'has_vat'])
             ->toArray();
 
         return view('pages.sales.form', [

@@ -10,10 +10,10 @@
 
     <div class="fiscal-ticket mx-auto rounded-lg border border-gray-300 bg-white p-4 text-black print:border-0">
         <div class="text-center">
+            <p class="text-[20px] font-bold leading-tight">SENIAT</p>
             <p class="text-[20px] font-bold leading-tight">{{ strtoupper($company['name']) }}</p>
             <p class="text-[16px] font-bold">RIF: {{ $company['rif'] ?: 'N/A' }}</p>
-            <p class="text-[14px]">Domicilio Fiscal</p>
-            <p class="text-[13px]">{{ $company['address'] ?: '-' }}</p>
+            <p class="text-[14px]">{{ $company['address'] ?: '-' }}</p>
         </div>
 
         <div class="my-3 text-center">

@@ -339,6 +339,9 @@ function saleForm() {
             this.items[i].open = false;
             this.calcTotals();
         },
+        findProductById(productId) {
+            return this.products.find(p => Number(p.id) === Number(productId));
+        },
         findProductBySku(code) {
             const sku = String(code || '').trim().toLowerCase();
             return this.products.find(p => String(p.sku || '').trim().toLowerCase() === sku);
@@ -423,7 +426,17 @@ function saleForm() {
                 it.subtotal_ves = sub * this.rate;
                 return s + sub;
             }, 0);
-            this.taxUsd = this.subtotalUsd * (this.taxRate / 100);
+
+            this.taxUsd = this.items.reduce((sum, item) => {
+                const product = this.findProductById(item.product_id);
+                if (!product || !product.has_vat) {
+                    return sum;
+                }
+
+                const lineSubtotal = (parseFloat(item.quantity) || 0) * (parseFloat(item.unit_price_usd) || 0);
+                return sum + (lineSubtotal * (this.taxRate / 100));
+            }, 0);
+
             this.totalUsd = this.subtotalUsd + this.taxUsd;
             this.totalVes = this.totalUsd * this.rate;
             this.refreshCreditPlan();

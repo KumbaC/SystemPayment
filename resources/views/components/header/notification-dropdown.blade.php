@@ -33,3 +33,49 @@
         </ul>
     </div>
 </div>
+
+@once
+    @push('scripts')
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                if (!window.Swal) {
+                    return;
+                }
+
+                const alerts = @json($notificationAlerts ?? []);
+                if (!Array.isArray(alerts) || !alerts.length) {
+                    return;
+                }
+
+                const sessionPrefix = 'notif-alert-shown-';
+                const queue = [];
+
+                alerts.forEach(function (alertItem) {
+                    const key = sessionPrefix + String(alertItem.key || 'general');
+                    if (sessionStorage.getItem(key)) {
+                        return;
+                    }
+
+                    sessionStorage.setItem(key, '1');
+                    queue.push({
+                        icon: alertItem.icon || 'warning',
+                        title: alertItem.title || 'Notificación',
+                        text: alertItem.text || '',
+                        confirmButtonText: 'Entendido'
+                    });
+                });
+
+                if (!queue.length) {
+                    return;
+                }
+
+                let chain = Promise.resolve();
+                queue.forEach(function (modalConfig) {
+                    chain = chain.then(function () {
+                        return window.Swal.fire(modalConfig);
+                    });
+                });
+            });
+        </script>
+    @endpush
+@endonce

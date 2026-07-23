@@ -15,27 +15,27 @@
     </div>
 
     <div class="mx-auto max-w-3xl rounded-2xl border border-gray-200 bg-white p-8 dark:border-gray-800 dark:bg-white/[0.03] print:border-0 print:shadow-none">
-        <div class="mb-8 flex justify-between border-b pb-6">
-            <div>
-                <h1 class="text-xl font-bold">{{ $company['name'] }}</h1>
-                <p class="text-sm text-gray-600">RIF: {{ $company['rif'] }}</p>
-                <p class="text-sm text-gray-600">{{ $company['address'] }}</p>
-                <p class="text-sm text-gray-600">Tel: {{ $company['phone'] }}</p>
-            </div>
-            <div class="text-right">
-                <h2 class="text-2xl font-bold text-brand-600">FACTURA</h2>
-                <p class="text-sm"><strong>N°:</strong> {{ $sale->invoice_number }}</p>
-                <p class="text-sm"><strong>Fecha:</strong> {{ $sale->sale_date->format('d/m/Y') }}</p>
-                <p class="text-sm"><strong>Tasa BCV:</strong> {{ number_format($sale->exchange_rate, 4, ',', '.') }} Bs/USD</p>
+        <div class="mb-8 border-b pb-6">
+            <p class="mb-3 text-center text-lg font-bold tracking-wide">SENIAT</p>
+            <div class="flex justify-between">
+                <div>
+                    <h1 class="text-xl font-bold">{{ $company['name'] }}</h1>
+                    <p class="text-sm text-gray-600">RIF: {{ $company['rif'] }}</p>
+                    <p class="text-sm text-gray-600">{{ $company['address'] }}</p>
+                    <p class="text-sm text-gray-600">Tel: {{ $company['phone'] }}</p>
+                </div>
+                <div class="text-right">
+                    <h2 class="text-2xl font-bold text-brand-600">FACTURA</h2>
+                    <p class="text-sm"><strong>N°:</strong> {{ $sale->invoice_number }}</p>
+                    <p class="text-sm"><strong>FECHA:</strong> {{ $sale->created_at?->format('d/m/Y h:i a') }}</p>
+                    <p class="text-sm"><strong>RAZON SOCIAL:</strong> {{ $sale->customer?->name ?? 'NO CONTRIBUYENTE' }}</p>
+                </div>
             </div>
         </div>
 
         <div class="mb-6">
-            <p class="text-sm font-medium">Cliente:</p>
-            <p>{{ $sale->customer?->name ?? 'Consumidor Final' }}</p>
-            @if ($sale->customer?->fullDocument())
-                <p class="text-sm text-gray-600">{{ $sale->customer->fullDocument() }}</p>
-            @endif
+            
+            
         </div>
 
         <table class="mb-6 w-full text-sm">
@@ -70,16 +70,22 @@
             </div>
         </div>
 
-        <div class="border-t pt-4">
-            <p class="mb-2 text-sm font-medium">Formas de Pago:</p>
-            @foreach ($sale->payments as $payment)
-                <p class="text-sm">
-                    {{ $payment->paymentMethodLabel() }} ({{ $payment->currency }})
-                    — {{ number_format($payment->amount, 2) }} → Bs. {{ number_format($payment->amount_ves, 2, ',', '.') }}
-                    @if ($payment->reference) · Ref: {{ $payment->reference }} @endif
-                </p>
-            @endforeach
-        </div>
+        @php
+            $allowedPaymentMethods = ['efectivo', 'transferencia', 'pago_movil', 'zelle', 'punto_venta', 'usdt'];
+            $visiblePayments = $sale->payments->filter(fn ($payment) => in_array($payment->payment_method, $allowedPaymentMethods, true));
+        @endphp
+        @if ($visiblePayments->isNotEmpty())
+            <div class="border-t pt-4">
+                <p class="mb-2 text-sm font-medium">Formas de Pago:</p>
+                @foreach ($visiblePayments as $payment)
+                    <p class="text-sm">
+                        {{ $payment->paymentMethodLabel() }} ({{ $payment->currency }})
+                        — {{ number_format($payment->amount, 2) }} → Bs. {{ number_format($payment->amount_ves, 2, ',', '.') }}
+                        @if ($payment->reference) · Ref: {{ $payment->reference }} @endif
+                    </p>
+                @endforeach
+            </div>
+        @endif
 
         <p class="mt-8 text-center text-xs text-gray-500">Documento generado por sistema de gestión — Venezuela</p>
     </div>
